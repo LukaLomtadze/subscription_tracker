@@ -36,3 +36,31 @@ export const getUserSubscriptions = async (req,res,next) => {
         next(err)
     }
 }
+
+
+export const getAllSubscriptions = async (req, res, next) => {
+    try{
+        const subs = await Subscription.find().populate("user", "name email")
+        res.status(200).json({success: true, data: subs});  
+    }
+    catch(err){
+        next(err)
+    }
+}
+
+export const deleteSubscription = async(req, res, next) => {
+    try{
+        const subToDelete = await Subscription.findOneAndDelete({
+            _id: req.params.id,
+            user: req.user._id
+        })
+
+        if(!subToDelete){
+            res.status(404).json({success: false, message: "Subscription not found"})
+        }
+
+        res.status(200).json({success: true, message: "Subscription deleted succesfully"})
+    }catch(err){
+        next(err)
+    }
+}
